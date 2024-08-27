@@ -1,0 +1,1496 @@
+Machine coding interviews typically focus on assessing your ability to write clean, efficient, and maintainable code. For a .NET Core + React full stack developer role, questions often span both backend and frontend, requiring you to demonstrate proficiency in both areas.
+
+Here's a list of 20 frequently asked machine coding interview questions, along with explanations and example code. I will cover the .NET Core backend and React frontend areas:
+
+### .NET Core Backend Questions
+
+1. **Create a REST API to perform CRUD operations on a simple entity (e.g., `Product`)**
+    - **Objective:** Implement a REST API that handles Create, Read, Update, and Delete operations for a `Product` entity.
+    - **Code:**
+        
+        ```csharp
+        // Model
+        public class Product
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public decimal Price { get; set; }
+        }
+        
+        // Controller
+        [ApiController]
+        [Route("api/[controller]")]
+        public class ProductsController : ControllerBase
+        {
+            private static List<Product> products = new List<Product>();
+        
+            [HttpGet]
+            public IActionResult Get() => Ok(products);
+        
+            [HttpGet("{id}")]
+            public IActionResult Get(int id)
+            {
+                var product = products.FirstOrDefault(p => p.Id == id);
+                return product == null ? NotFound() : Ok(product);
+            }
+        
+            [HttpPost]
+            public IActionResult Post([FromBody] Product product)
+            {
+                product.Id = products.Count + 1;
+                products.Add(product);
+                return CreatedAtAction(nameof(Get), new { id = product.Id }, product);
+            }
+        
+            [HttpPut("{id}")]
+            public IActionResult Put(int id, [FromBody] Product updatedProduct)
+            {
+                var product = products.FirstOrDefault(p => p.Id == id);
+                if (product == null) return NotFound();
+        
+                product.Name = updatedProduct.Name;
+                product.Price = updatedProduct.Price;
+                return NoContent();
+            }
+        
+            [HttpDelete("{id}")]
+            public IActionResult Delete(int id)
+            {
+                var product = products.FirstOrDefault(p => p.Id == id);
+                if (product == null) return NotFound();
+        
+                products.Remove(product);
+                return NoContent();
+            }
+        }
+        
+        ```
+        
+    - **Explanation:** This simple CRUD API demonstrates how to handle HTTP GET, POST, PUT, and DELETE requests in a .NET Core Web API project.
+2. **Implementing Pagination in a REST API**
+    - **Objective:** Implement pagination for a list of products.
+    - **Code:**
+        
+        ```csharp
+        [HttpGet]
+        public IActionResult Get(int pageNumber = 1, int pageSize = 10)
+        {
+            var paginatedProducts = products.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            return Ok(paginatedProducts);
+        }
+        
+        ```
+        
+    - **Explanation:** Pagination is implemented using LINQ to skip a certain number of items and take the next set of items based on the provided page number and page size.
+3. **User Authentication and Authorization using JWT**
+    - **Objective:** Secure your API endpoints with JWT tokens.
+    - **Code:**
+        
+        ```csharp
+        // Authentication Service
+        public class AuthService
+        {
+            public string GenerateJwtToken(User user)
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes("YourSecretKeyHere");
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new Claim[]
+                    {
+                        new Claim(ClaimTypes.Name, user.Username)
+                    }),
+                    Expires = DateTime.UtcNow.AddDays(7),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                return tokenHandler.WriteToken(token);
+            }
+        }
+        
+        // Secure Controller Endpoint
+        [Authorize]
+        [HttpGet("secure-data")]
+        public IActionResult GetSecureData()
+        {
+            return Ok("This is secured data.");
+        }
+        
+        ```
+        
+    - **Explanation:** JWT tokens are generated and used to secure API endpoints. The `[Authorize]` attribute ensures that only authenticated users can access certain endpoints.
+4. **Dependency Injection in .NET Core**
+    - **Objective:** Use dependency injection to manage services.
+    - **Code:**
+        
+        ```csharp
+        public interface IProductService
+        {
+            IEnumerable<Product> GetAll();
+            Product GetById(int id);
+        }
+        
+        public class ProductService : IProductService
+        {
+            private List<Product> products = new List<Product>();
+        
+            public IEnumerable<Product> GetAll() => products;
+            public Product GetById(int id) => products.FirstOrDefault(p => p.Id == id);
+        }
+        
+        // In Startup.cs
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IProductService, ProductService>();
+        }
+        
+        // Controller
+        public class ProductsController : ControllerBase
+        {
+            private readonly IProductService _productService;
+        
+            public ProductsController(IProductService productService)
+            {
+                _productService = productService;
+            }
+        
+            [HttpGet]
+            public IActionResult Get() => Ok(_productService.GetAll());
+        }
+        
+        ```
+        
+    - **Explanation:** Dependency Injection (DI) is demonstrated by injecting a `ProductService` into the controller, promoting loose coupling.
+5. **Implementing a Middleware in .NET Core**
+    - **Objective:** Create custom middleware to handle request logging.
+    - **Code:**
+        
+        ```csharp
+        public class RequestLoggingMiddleware
+        {
+            private readonly RequestDelegate _next;
+        
+            public RequestLoggingMiddleware(RequestDelegate next)
+            {
+                _next = next;
+            }
+        
+            public async Task InvokeAsync(HttpContext context)
+            {
+                Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");
+                await _next(context);
+            }
+        }
+        
+        // In Startup.cs
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            app.UseMiddleware<RequestLoggingMiddleware>();
+        }
+        
+        ```
+        
+    - **Explanation:** Custom middleware intercepts HTTP requests to log details before passing them to the next middleware in the pipeline.
+    
+    [in detail](https://www.notion.so/in-detail-8326c5ec85ee421c85c7d3cf2eeaf3a9?pvs=21)
+    
+6. **Implementing Caching using MemoryCache**
+    - **Objective:** Cache the results of frequently accessed data.
+    - **Code:**
+        
+        ```csharp
+        private readonly IMemoryCache _cache;
+        
+        public ProductsController(IMemoryCache cache)
+        {
+            _cache = cache;
+        }
+        
+        [HttpGet]
+        public IActionResult Get()
+        {
+            if (!_cache.TryGetValue("products", out List<Product> products))
+            {
+                // Simulating data fetching
+                products = FetchProductsFromDatabase();
+        
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(2));
+        
+                _cache.Set("products", products, cacheEntryOptions);
+            }
+            return Ok(products);
+        }
+        ```
+        
+    - **Explanation:** MemoryCache is used to store and retrieve cached data, improving the performance of your application by reducing the need to repeatedly access a database.
+7. **Handling Exceptions in a Global Exception Handler**
+    - **Objective:** Create a global exception handler to manage exceptions across the application.
+    - **Code:**
+        
+        ```csharp
+        public class GlobalExceptionHandlerMiddleware
+        {
+            private readonly RequestDelegate _next;
+        
+            public GlobalExceptionHandlerMiddleware(RequestDelegate next)
+            {
+                _next = next;
+            }
+        
+            public async Task InvokeAsync(HttpContext context)
+            {
+                try
+                {
+                    await _next(context);
+                }
+                catch (Exception ex)
+                {
+                    await HandleExceptionAsync(context, ex);
+                }
+            }
+        
+            private Task HandleExceptionAsync(HttpContext context, Exception ex)
+            {
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        
+                var result = JsonConvert.SerializeObject(new { error = ex.Message });
+                return context.Response.WriteAsync(result);
+            }
+        }
+        
+        // In Startup.cs
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+        }
+        
+        ```
+        
+    - **Explanation:** This middleware catches all exceptions globally and returns a formatted JSON response, providing a consistent error handling mechanism.
+8. **Using Entity Framework Core for Data Access**
+    - **Objective:** Use EF Core to interact with a SQL database.
+    - **Code:**
+        
+        ```csharp
+        public class ApplicationDbContext : DbContext
+        {
+            public DbSet<Product> Products { get; set; }
+        
+            public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+        }
+        
+        public class ProductsController : ControllerBase
+        {
+            private readonly ApplicationDbContext _context;
+        
+            public ProductsController(ApplicationDbContext context)
+            {
+                _context = context;
+            }
+        
+            [HttpGet]
+            public IActionResult Get() => Ok(_context.Products.ToList());
+        
+            [HttpPost]
+            public IActionResult Post([FromBody] Product product)
+            {
+                _context.Products.Add(product);
+                _context.SaveChanges();
+                return CreatedAtAction(nameof(Get), new { id = product.Id }, product);
+            }
+        }
+        
+        ```
+        
+    - **Explanation:** EF Core simplifies database interactions by abstracting raw SQL queries, allowing for ORM-based data operations.
+9. **Creating Background Services using IHostedService**
+    - **Objective:** Implement a background service that runs periodically.
+    - **Code:**
+        
+        ```csharp
+        public class BackgroundDataService : IHostedService, IDisposable
+        {
+            private Timer _timer;
+        
+            public Task StartAsync(CancellationToken cancellationToken)
+            {
+                _timer = new Timer
+                (DoWork, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+        return Task.CompletedTask;
+        }
+         private void DoWork(object state)
+             {
+                 // Logic for background task
+                 Console.WriteLine("Background task running.");
+             }
+        
+             public Task StopAsync(CancellationToken cancellationToken)
+             {
+                 _timer?.Change(Timeout.Infinite, 0);
+                 return Task.CompletedTask;
+             }
+        
+             public void Dispose()
+             {
+                 _timer?.Dispose();
+             }
+         }
+        
+         // In Startup.cs
+         public void ConfigureServices(IServiceCollection services)
+         {
+             services.AddHostedService<BackgroundDataService>();
+         }
+         ```
+        
+        ```
+        
+
+- **Explanation:** Background services are used to run tasks periodically in the background without blocking the main thread.
+1. **Implementing Rate Limiting in .NET Core**
+    - **Objective:** Prevent abuse by limiting the number of requests a client can make.
+    - **Code:**
+        
+        ```csharp
+        public class RateLimitingMiddleware
+        {
+            private static readonly Dictionary<string, DateTime> RequestTimes = new Dictionary<string, DateTime>();
+            private readonly RequestDelegate _next;
+            private const int Limit = 5;
+            private const int TimeWindow = 60;
+        
+            public RateLimitingMiddleware(RequestDelegate next)
+            {
+                _next = next;
+            }
+        
+            public async Task InvokeAsync(HttpContext context)
+            {
+                var clientIp = context.Connection.RemoteIpAddress.ToString();
+                if (RequestTimes.TryGetValue(clientIp, out var lastRequestTime))
+                {
+                    if ((DateTime.Now - lastRequestTime).TotalSeconds < TimeWindow)
+                    {
+                        context.Response.StatusCode = 429;
+                        await context.Response.WriteAsync("Too many requests. Try again later.");
+                        return;
+                    }
+                }
+        
+                RequestTimes[clientIp] = DateTime.Now;
+                await _next(context);
+            }
+        }
+        
+        // In Startup.cs
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            app.UseMiddleware<RateLimitingMiddleware>();
+        }
+        
+        ```
+        
+    - **Explanation:** Rate limiting is achieved by tracking the number of requests made by a client in a given time window.
+
+### React Frontend Questions
+
+1. **Create a Simple React Component**
+    - **Objective:** Create a React component to display a list of products.
+    - **Code:**
+        
+        ```jsx
+        import React from 'react';
+        
+        const ProductList = ({ products }) => {
+            return (
+                <ul>
+                    {products.map(product => (
+                        <li key={product.id}>{product.name} - ${product.price}</li>
+                    ))}
+                </ul>
+            );
+        };
+        
+        export default ProductList;
+        
+        ```
+        
+    - **Explanation:** A functional component is used to render a list of products, where each product is displayed as a list item.
+2. **Handling State in React with useState**
+    - **Objective:** Manage component state using the `useState` hook.
+    - **Code:**
+        
+        ```jsx
+        import React, { useState } from 'react';
+        
+        const Counter = () => {
+            const [count, setCount] = useState(0);
+        
+            return (
+                <div>
+                    <p>Count: {count}</p>
+                    <button onClick={() => setCount(count + 1)}>Increment</button>
+                </div>
+            );
+        };
+        
+        export default Counter;
+        
+        ```
+        
+    - **Explanation:** The `useState` hook is used to manage the state of the `Counter` component, allowing the count to be incremented when a button is clicked.
+3. **Fetching Data from an API using useEffect**
+    - **Objective:** Fetch data from the API and display it.
+    - **Code:**
+        
+        ```jsx
+        import React, { useState, useEffect } from 'react';
+        
+        const ProductList = () => {
+            const [products, setProducts] = useState([]);
+        
+            useEffect(() => {
+                fetch('/api/products')
+                    .then(response => response.json())
+                    .then(data => setProducts(data));
+            }, []);
+        
+            return (
+                <ul>
+                    {products.map(product => (
+                        <li key={product.id}>{product.name} - ${product.price}</li>
+                    ))}
+                </ul>
+            );
+        };
+        
+        export default ProductList;
+        
+        ```
+        
+    - **Explanation:** The `useEffect` hook is used to fetch data from an API when the component mounts. The data is then displayed in a list.
+4. **React Router: Implementing Navigation Between Pages**
+    - **Objective:** Set up routing between different pages in a React application.
+    - **Code:**
+        
+        ```jsx
+        import React from 'react';
+        import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
+        
+        const Home = () => <h2>Home</h2>;
+        const About = () => <h2>About</h2>;
+        
+        const App = () => {
+            return (
+                <Router>
+                    <nav>
+                        <Link to="/">Home</Link>
+                        <Link to="/about">About</Link>
+                    </nav>
+                    <Switch>
+                        <Route path="/" exact component={Home} />
+                        <Route path="/about" component={About} />
+                    </Switch>
+                </Router>
+            );
+        };
+        
+        export default App;
+        
+        ```
+        
+    - **Explanation:** React Router is used to navigate between different components (pages) within a single-page application.
+5. **Form Handling in React**
+    - **Objective:** Handle form inputs and submissions.
+    - **Code:**
+        
+        ```jsx
+        import React, { useState } from 'react';
+        
+        const ProductForm = ({ addProduct }) => {
+            const [name, setName] = useState('');
+            const [price, setPrice] = useState('');
+        
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                addProduct({ name, price });
+                setName('');
+                setPrice('');
+            };
+        
+            return (
+                <form onSubmit={handleSubmit}>
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Product Name"
+                    />
+                    <input
+                        type="text"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        placeholder="Product Price"
+                    />
+                    <button type="submit">Add Product</button>
+                </form>
+            );
+        };
+        
+        export default ProductForm;
+        
+        ```
+        
+    - **Explanation:** Form handling in React involves managing state for each input and handling form submissions.
+6. **Component Lifecycle with useEffect**
+    - **Objective:** Demonstrate the lifecycle methods with `useEffect`.
+    - **Code:**
+        
+        ```jsx
+        import React, { useState, useEffect } from 'react';
+        
+        const Timer = () => {
+            const [seconds, setSeconds] = useState(0);
+        
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setSeconds(s => s + 1);
+                }, 1000);
+        
+                return () => clearInterval(interval); // Cleanup
+            }, []);
+        
+            return <p>{seconds} seconds have passed.</p>;
+        };
+        
+        export default Timer;
+        
+        ```
+        
+    - **Explanation:** The `useEffect` hook is used to simulate lifecycle methods like `componentDidMount` and `componentWillUnmount` by setting up and cleaning up an interval timer.
+7. **Handling Conditional Rendering in React**
+    - **Objective:** Render different UI elements based on state.
+    - **Code:**
+        
+        ```jsx
+        import React, { useState } from 'react';
+        
+        const UserGreeting = () => <h1>Welcome back!</h1>;
+        const GuestGreeting = () => <h1>Please sign up.</h1>;
+        
+        const Greeting = ({ isLoggedIn }) => {
+            return isLoggedIn ? <UserGreeting /> : <GuestGreeting />;
+        };
+        
+        const App = () => {
+            const [isLoggedIn, setIsLoggedIn] = useState(false);
+        
+            return (
+                <div>
+                    <Greeting isLoggedIn={isLoggedIn} />
+                    <button onClick={() => setIsLoggedIn(!isLoggedIn)}>
+                        {isLoggedIn ? 'Logout' : 'Login'}
+                    </button>
+                </div>
+            );
+        };
+        
+        export default App;
+        
+        ```
+        
+    - **Explanation:** Conditional rendering is used to display different components based on the value of `isLoggedIn`.
+8. **Creating a Custom Hook**
+    - **Objective:** Create a custom hook to encapsulate reusable logic.
+    - **Code:**
+        
+        ```jsx
+        import { useState, useEffect } from 'react';
+        
+        const useFetch = (url) => {
+            const [data, setData] = useState(null);
+            const [loading, setLoading] = useState(true);
+        
+            useEffect(() => {
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        setData(data);
+                        setLoading(false);
+                    });
+            }, [url]);
+        
+            return { data, loading };
+        };
+        
+        export default useFetch;
+        
+        ```
+        
+    - **Explanation:** A custom hook `useFetch` is created to fetch data from an API, which can be reused across different components.
+9. **Optimizing React Performance using useMemo and useCallback**
+    - **Objective:** Prevent unnecessary re-renders using `useMemo` and `useCallback`.
+    - **Code:**
+        
+        ```jsx
+        import React, { useState, useMemo, useCallback } from 'react';
+        
+        const ChildComponent = React.memo(({ calculate }) => {
+            console.log("Child component rendered");
+            return <p>Calculated Value: {calculate()}</p>;
+        });
+        
+        const App = () => {
+            const
+        
+        ```
+        
+
+[count, setCount] = useState(0);
+const [input, setInput] = useState('');
+
+```
+      const calculate = useCallback(() => {
+          return count * 2;
+      }, [count]);
+
+      const memoizedValue = useMemo(() => calculate(), [calculate]);
+
+      return (
+          <div>
+              <input type="text" value={input} onChange={(e) => setInput(e.target.value)} />
+              <button onClick={() => setCount(count + 1)}>Increment Count</button>
+              <ChildComponent calculate={calculate} />
+          </div>
+      );
+  };
+
+  export default App;
+  ```
+- **Explanation:** `useMemo` and `useCallback` are used to memoize values and functions, preventing unnecessary re-renders and optimizing performance.
+
+```
+
+1. **Integrating React with a .NET Core API**
+    - **Objective:** Fetch data from a .NET Core API and display it in a React component.
+    - **Code:**
+        
+        ```jsx
+        import React, { useState, useEffect } from 'react';
+        
+        const ProductList = () => {
+            const [products, setProducts] = useState([]);
+        
+            useEffect(() => {
+                fetch('/api/products')
+                    .then(response => response.json())
+                    .then(data => setProducts(data));
+            }, []);
+        
+            return (
+                <ul>
+                    {products.map(product => (
+                        <li key={product.id}>{product.name} - ${product.price}</li>
+                    ))}
+                </ul>
+            );
+        };
+        
+        export default ProductList;
+        
+        ```
+        
+    - **Explanation:** This component fetches data from a .NET Core API and displays it. It demonstrates how to integrate the React frontend with a backend API.
+
+These examples cover various aspects of both backend and frontend development, demonstrating essential skills for a .NET Core + React full stack developer role.
+
+Here’s a detailed breakdown of answers for each of the 50 questions. This will be a lengthy response, so I'll group them based on categories.
+
+### .NET Core Coding Questions
+
+1. **Explain the difference between `IEnumerable` and `IQueryable`.**
+    - **`IEnumerable`:** Used for in-memory data manipulation, executes the query in-memory when you start iterating. It’s suitable for collections like Lists, Arrays, etc.
+    - **`IQueryable`:** Used for querying data from an external data source like a database. The query is executed on the server side, and you can compose queries using LINQ before executing them.
+2. **What is dependency injection? Can you give an example?**
+    - **Dependency Injection (DI):** A design pattern that allows a class to receive its dependencies from external sources rather than creating them itself. It promotes loose coupling and easier unit testing.
+    - **Example:** In .NET Core, you can inject services like `ILogger` into a controller constructor.
+        
+        ```csharp
+        public class MyController : Controller
+        {
+            private readonly ILogger<MyController> _logger;
+        
+            public MyController(ILogger<MyController> logger)
+            {
+                _logger = logger;
+            }
+        
+            public IActionResult Index()
+            {
+                _logger.LogInformation("Index page called");
+                return View();
+            }
+        }
+        
+        ```
+        
+3. **How do you implement repository patterns in .NET Core?**
+    - The Repository Pattern abstracts the data layer, making it easier to manage and test data access logic.
+        
+        ```csharp
+        public interface IProductRepository
+        {
+            IEnumerable<Product> GetAllProducts();
+            Product GetProductById(int id);
+            void AddProduct(Product product);
+        }
+        
+        public class ProductRepository : IProductRepository
+        {
+            private readonly AppDbContext _context;
+        
+            public ProductRepository(AppDbContext context)
+            {
+                _context = context;
+            }
+        
+            public IEnumerable<Product> GetAllProducts() => _context.Products.ToList();
+        
+            public Product GetProductById(int id) => _context.Products.Find(id);
+        
+            public void AddProduct(Product product) => _context.Products.Add(product);
+        }
+        
+        ```
+        
+4. **Explain async/await in .NET Core with an example.**
+    - **async/await:** Used for asynchronous programming to avoid blocking threads. The `async` keyword marks a method as asynchronous, and `await` pauses the execution until the awaited task is complete.
+        
+        ```csharp
+        public async Task<string> GetDataAsync()
+        {
+            HttpClient client = new HttpClient();
+            string result = await client.GetStringAsync("<https://example.com>");
+            return result;
+        }
+        
+        ```
+        
+5. **How would you handle exceptions globally in a .NET Core web API?**
+    - Use middleware to handle exceptions globally:
+        
+        ```csharp
+        public class GlobalExceptionHandlerMiddleware
+        {
+            private readonly RequestDelegate _next;
+        
+            public GlobalExceptionHandlerMiddleware(RequestDelegate next)
+            {
+                _next = next;
+            }
+        
+            public async Task InvokeAsync(HttpContext context)
+            {
+                try
+                {
+                    await _next(context);
+                }
+                catch (Exception ex)
+                {
+                    await HandleExceptionAsync(context, ex);
+                }
+            }
+        
+            private Task HandleExceptionAsync(HttpContext context, Exception ex)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return context.Response.WriteAsync(new ErrorDetails
+                {
+                    StatusCode = context.Response.StatusCode,
+                    Message = "Internal Server Error"
+                }.ToString());
+            }
+        }
+        
+        ```
+        
+6. **Write a method to find the second largest element in an array.**
+    
+    ```csharp
+    public int FindSecondLargest(int[] arr)
+    {
+        int first = int.MinValue;
+        int second = int.MinValue;
+    
+        foreach (var num in arr)
+        {
+            if (num > first)
+            {
+                second = first;
+                first = num;
+            }
+            else if (num > second && num != first)
+            {
+                second = num;
+            }
+        }
+    
+        return second;
+    }
+    
+    ```
+    
+7. **How do you secure a .NET Core web API?**
+    - **Authentication:** Use JWT (JSON Web Tokens) or OAuth for authenticating users.
+    - **Authorization:** Use roles and policies.
+    - **Data protection:** Implement HTTPS, encrypt sensitive data, and use secure headers.
+8. **What is the difference between `Task` and `Thread`?**
+    - **Thread:** Represents an OS thread. It's a lower-level concept for executing code concurrently.
+    - **Task:** Represents an operation that runs asynchronously, possibly on a thread pool thread, and provides more features like continuation, cancellation, and coordination of tasks.
+9. **How do you implement caching in .NET Core?**
+    - Use in-memory caching with `IMemoryCache` or distributed caching with `IDistributedCache` for scalability.
+        
+        ```csharp
+        public class MyService
+        {
+            private readonly IMemoryCache _cache;
+        
+            public MyService(IMemoryCache cache)
+            {
+                _cache = cache;
+            }
+        
+            public string GetData()
+            {
+                if (!_cache.TryGetValue("myKey", out string data))
+                {
+                    data = "Expensive Data Fetching Operation";
+                    _cache.Set("myKey", data, TimeSpan.FromMinutes(5));
+                }
+        
+                return data;
+            }
+        }
+        
+        ```
+        
+10. **Explain the concept of middleware in .NET Core. Can you create custom middleware?**
+    - **Middleware:** Software components that handle requests and responses in a pipeline. Each middleware can either process the request or pass it to the next middleware in the pipeline.
+    - **Custom Middleware:**
+        
+        ```csharp
+        public class CustomMiddleware
+        {
+            private readonly RequestDelegate _next;
+        
+            public CustomMiddleware(RequestDelegate next)
+            {
+                _next = next;
+            }
+        
+            public async Task InvokeAsync(HttpContext context)
+            {
+                // Do something with the context
+                await _next(context);
+            }
+        }
+        
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseMiddleware<CustomMiddleware>();
+        }
+        
+        ```
+        
+
+### .NET Core Code Refactoring Questions
+
+1. **Given a class with many responsibilities, how would you refactor it using SOLID principles?**
+    - **Single Responsibility Principle (SRP):** Split the class into multiple classes where each class has a single responsibility.
+    - **Example:**
+        
+        ```csharp
+        public class OrderProcessor
+        {
+            public void ProcessOrder(Order order) { /*...*/ }
+            public void SendConfirmationEmail(Order order) { /*...*/ }
+            public void LogOrder(Order order) { /*...*/ }
+        }
+        
+        // Refactor to:
+        public class OrderProcessor { public void ProcessOrder(Order order) { /*...*/ } }
+        public class EmailService { public void SendConfirmationEmail(Order order) { /*...*/ } }
+        public class Logger { public void LogOrder(Order order) { /*...*/ } }
+        
+        ```
+        
+2. **Refactor a long method into smaller methods without changing the functionality.**
+    - Identify logically grouped code and extract it into separate methods.
+    - **Example:**
+        
+        ```csharp
+        public void LongMethod()
+        {
+            // Block 1
+            StepOne();
+            // Block 2
+            StepTwo();
+            // Block 3
+            StepThree();
+        }
+        
+        private void StepOne() { /*...*/ }
+        private void StepTwo() { /*...*/ }
+        private void StepThree() { /*...*/ }
+        
+        ```
+        
+3. **Identify and remove unnecessary dependencies in a given code snippet.**
+    - **Example:** If a method is dependent on a database call but doesn’t need it, remove that dependency and refactor the method.
+        
+        ```csharp
+        public class ReportGenerator
+        {
+            private readonly IDatabase _database;
+        
+            public ReportGenerator(IDatabase database)
+            {
+                _database = database;
+            }
+        
+            public void Generate()
+            {
+                // Removed database dependency
+            }
+        }
+        
+        ```
+        
+4. **Optimize a given LINQ query for performance.**
+    - Avoid unnecessary method calls like `ToList()` in the middle of the query.
+    - Example:
+        
+        ```csharp
+        var result = context.Products
+                           .Where(p => p.Price > 100)
+                           .OrderBy(p => p.Name)
+                           .ToList(); // Delay execution until the result is actually needed
+        
+        ```
+        
+5. **Refactor a method that has multiple `if-else` conditions.**
+    - Use a dictionary or a switch expression if possible to reduce complexity.
+    - Example:
+        
+        ```csharp
+        public string GetType(int typeCode)
+        {
+            return typeCode switch
+            {
+                1 => "Type 1",
+                2 => "Type 2",
+                _ => "Unknown Type"
+            };
+        }
+        
+        ```
+        
+6. **Refactor code to reduce the number of parameters passed into methods.**
+    - Encapsulate related parameters into an object.
+    - Example:
+        
+        ```csharp
+        public void SaveUser(string name, string email, string address) { /*...*/ }
+        
+        // Refactor:
+        public void SaveUser(UserDetails details) { /*...*/ }
+        
+        public class UserDetails { public string Name { get; set; } public string Email { get; set; } public string Address { get; set; } }
+        
+        ```
+        
+7. **Given a piece of code, refactor it to use dependency injection.**
+    - Replace directly instantiated classes with injected dependencies.
+    - Example:
+        
+        ```csharp
+        public class OrderService
+        {
+            private readonly IOrderRepository _repository;
+        
+            public OrderService(IOrder
+        
+        ```
+        
+
+Repository repository)
+{
+_repository = repository;
+}
+}
+```
+
+1. **Identify and refactor tightly coupled classes to be more loosely coupled.**
+    - Use interfaces and DI to decouple classes.
+    - Example:
+        
+        ```csharp
+        public class EmailService
+        {
+            private readonly IEmailProvider _emailProvider;
+        
+            public EmailService(IEmailProvider emailProvider)
+            {
+                _emailProvider = emailProvider;
+            }
+        }
+        
+        ```
+        
+2. **Refactor a large switch-case statement to use polymorphism.**
+    - Replace the switch with polymorphic behavior.
+    - Example:
+        
+        ```csharp
+        public interface IHandler { void Handle(); }
+        public class Type1Handler : IHandler { public void Handle() { /*...*/ } }
+        public class Type2Handler : IHandler { public void Handle() { /*...*/ } }
+        
+        ```
+        
+3. **Refactor code to improve its readability and maintainability.**
+    - Apply best practices like naming conventions, reducing method sizes, and ensuring proper separation of concerns.
+    - Example:
+        
+        ```csharp
+        public void Calculate(int value) { /* Complex calculations */ }
+        
+        // Refactor to:
+        public void Calculate(int value)
+        {
+            var stepOneResult = StepOne(value);
+            var stepTwoResult = StepTwo(stepOneResult);
+            FinalStep(stepTwoResult);
+        }
+        
+        ```
+        
+
+### .NET Core Bug Fixing Questions
+
+1. **Given a code snippet that throws a null reference exception, identify and fix the issue.**
+    - Check for `null` before accessing members.
+    - Example:
+        
+        ```csharp
+        if (obj != null) { var result = obj.Property; }
+        
+        ```
+        
+2. **Debug and fix a failing unit test.**
+    - Analyze the test and method to find discrepancies.
+    - Example: Ensure correct setup of mock dependencies.
+3. **Identify and resolve a deadlock situation in multi-threaded code.**
+    - Avoid nested locks or use `async/await` to prevent deadlocks.
+    - Example:
+        
+        ```csharp
+        public async Task MethodA() { await semaphore.WaitAsync(); /* ... */ semaphore.Release(); }
+        
+        ```
+        
+4. **Fix a memory leak in a .NET Core application.**
+    - Ensure objects are disposed of properly, especially unmanaged resources.
+    - Example:
+        
+        ```csharp
+        using (var resource = new UnmanagedResource()) { /* ... */ }
+        
+        ```
+        
+5. **Resolve a bug where an async method is not working as expected.**
+    - Ensure that `await` is used with async methods and that tasks are properly awaited.
+    - Example:
+        
+        ```csharp
+        await myAsyncMethod();
+        
+        ```
+        
+6. **Identify and fix an issue where a web API call fails due to serialization problems.**
+    - Ensure that the objects being serialized are properly annotated with JSON attributes if necessary.
+    - Example:
+        
+        ```csharp
+        [JsonProperty("name")] public string Name { get; set; }
+        
+        ```
+        
+7. **Fix a performance issue in a LINQ query.**
+    - Optimize the query by reducing unnecessary operations and using indexes.
+    - Example:
+        
+        ```csharp
+        var result = context.Products.Where(p => p.IsActive).Select(p => new { p.Name }).ToList();
+        
+        ```
+        
+8. **Resolve an issue where a background service in .NET Core is not running.**
+    - Check service registration and ensure `IHostedService` is implemented correctly.
+    - Example:
+        
+        ```csharp
+        public class MyBackgroundService : BackgroundService { protected override Task ExecuteAsync(CancellationToken stoppingToken) { /* ... */ } }
+        
+        ```
+        
+9. **Fix a bug where a file upload functionality fails intermittently.**
+    - Investigate file size limits, concurrency issues, and error handling.
+    - Example:
+        
+        ```csharp
+        if (file.Length > 0) { using (var stream = file.OpenReadStream()) { /* ... */ } }
+        
+        ```
+        
+10. **Identify and fix an issue where database connections are not being released properly.**
+    - Ensure that the `DbContext` or connection is disposed of correctly.
+    - Example:
+        
+        ```csharp
+        using (var context = new MyDbContext()) { /* ... */ }
+        
+        ```
+        
+
+### React Coding Questions
+
+1. **How do you create a React component?**
+    - **Functional Component:**
+        
+        ```jsx
+        function MyComponent() {
+            return <div>Hello, World!</div>;
+        }
+        
+        ```
+        
+    - **Class Component:**
+        
+        ```jsx
+        class MyComponent extends React.Component {
+            render() {
+                return <div>Hello, World!</div>;
+            }
+        }
+        
+        ```
+        
+2. **Explain the difference between functional and class components.**
+    - **Functional Components:** Simple functions that return JSX. Use hooks for state and lifecycle management.
+    - **Class Components:** More complex, using `this.state` and `this.setState` for state management and lifecycle methods like `componentDidMount`.
+3. **How would you manage state in a React application?**
+    - Use the `useState` hook for local state management and context or state management libraries like Redux for global state.
+        
+        ```jsx
+        const [count, setCount] = useState(0);
+        
+        ```
+        
+4. **What is the purpose of the `useEffect` hook? Can you provide an example?**
+    - `useEffect` is used for side effects like fetching data or directly manipulating the DOM.
+    - Example:
+        
+        ```jsx
+        useEffect(() => {
+            fetch("/api/data").then(response => response.json()).then(data => setData(data));
+        }, []);
+        
+        ```
+        
+5. **How do you implement routing in a React application?**
+    - Use `react-router-dom` to manage routing:
+        
+        ```jsx
+        import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+        
+        function App() {
+            return (
+                <Router>
+                    <Switch>
+                        <Route path="/home" component={Home} />
+                        <Route path="/about" component={About} />
+                    </Switch>
+                </Router>
+            );
+        }
+        
+        ```
+        
+6. **Write a React component that fetches and displays data from an API.**
+    
+    ```jsx
+    function DataFetcher() {
+        const [data, setData] = useState([]);
+    
+        useEffect(() => {
+            fetch("/api/data")
+                .then(response => response.json())
+                .then(data => setData(data));
+        }, []);
+    
+        return (
+            <ul>
+                {data.map(item => <li key={item.id}>{item.name}</li>)}
+            </ul>
+        );
+    }
+    
+    ```
+    
+7. **Explain the concept of controlled and uncontrolled components in React.**
+    - **Controlled Components:** Form elements where the component controls the input state via props.
+    - **Uncontrolled Components:** Form elements that maintain their own state internally.
+    - Example:
+        
+        ```jsx
+        // Controlled
+        const [value, setValue] = useState("");
+        <input value={value} onChange={e => setValue(e.target.value)} />
+        
+        // Uncontrolled
+        const inputRef = useRef(null);
+        <input ref={inputRef} />
+        
+        ```
+        
+8. **How do you optimize a React application for performance?**
+    - **Memoization:** Use `React.memo` to prevent unnecessary re-renders.
+    - **Lazy Loading:** Use `React.lazy` and `Suspense` to load components on demand.
+    - **Avoid Anonymous Functions:** Pass stable references to callbacks.
+9. **What is the purpose of `React.memo`? Can you provide an example?**
+    - **React.memo:** A higher-order component that memoizes a functional component, preventing it from re-rendering unless its props change.
+    - Example:
+        
+        ```jsx
+        const MyComponent = React.memo(function MyComponent({ value }) {
+            return <div>{value}</div>;
+        });
+        
+        ```
+        
+10. **How would you implement form validation in a React application?**
+    - Use controlled components to manage input state and validate on change or submit.
+    - Example:
+        
+        ```jsx
+        const [email, setEmail] = useState("");
+        const [error, setError] = useState("");
+        
+        const validate = () => {
+            if (!email.includes("@")) {
+                setError("Invalid email");
+                return false;
+            }
+            return true;
+        };
+        
+        const handleSubmit = (e) => {
+            e.preventDefault();
+            if (validate()) {
+                // Submit form
+            }
+        };
+        
+        return (
+            <form onSubmit={handleSubmit}>
+                <input value={email} onChange={e => setEmail(e.target.value)} />
+                {error && <div>{error}</div>}
+                <button type="submit">Submit</button>
+            </form>
+        );
+        
+        ```
+        
+
+### React Code Refactoring Questions
+
+1. **Refactor a class component into a functional component using hooks.**
+    - Convert state and lifecycle methods to use hooks like `useState` and `useEffect`.
+    - Example:
+        
+        ```jsx
+        // Class Component
+        class MyComponent extends React.Component {
+            state = { count: 0 };
+        
+            componentDidMount() {
+                document.title = `Count: ${this.state.count}`;
+            }
+        
+            componentDidUpdate() {
+                document.title = `Count: ${this.state.count}`;
+            }
+        
+            render() {
+                return (
+                    <button onClick={() => this.setState({ count: this.state.count + 1 })}>
+                        Count: {this.state.count}
+                    </button>
+                );
+            }
+        }
+        
+        // Refactor to Functional Component
+        function MyComponent() {
+            const [count, set
+        
+        ```
+        
+
+Count] = useState(0);
+
+```
+      useEffect(() => {
+          document.title = `Count: ${count}`;
+      }, [count]);
+
+      return (
+          <button onClick={() => setCount(count + 1)}>
+              Count: {count}
+          </button>
+      );
+  }
+  ```
+
+```
+
+1. **Refactor repetitive code in a React component.**
+    - Extract common functionality into a reusable function or component.
+    - Example:
+        
+        ```jsx
+        function RepetitiveComponent({ data }) {
+            return data.map(item => <li key={item.id}>{item.name}</li>);
+        }
+        
+        function ParentComponent() {
+            return (
+                <ul>
+                    <RepetitiveComponent data={list1} />
+                    <RepetitiveComponent data={list2} />
+                </ul>
+            );
+        }
+        
+        ```
+        
+2. **Simplify a complex React component by breaking it into smaller components.**
+    - Split large components into smaller, more focused components.
+    - Example:
+        
+        ```jsx
+        function ComplexComponent() {
+            return (
+                <div>
+                    <Header />
+                    <MainContent />
+                    <Footer />
+                </div>
+            );
+        }
+        
+        function Header() { return <header>Header Content</header>; }
+        function MainContent() { return <main>Main Content</main>; }
+        function Footer() { return <footer>Footer Content</footer>; }
+        
+        ```
+        
+3. **Refactor inline styling to use CSS classes or styled-components.**
+    - Example:
+        
+        ```jsx
+        // Before
+        <div style={{ backgroundColor: 'red', color: 'white' }}>Hello</div>
+        
+        // After with CSS
+        <div className="my-class">Hello</div>
+        
+        // After with styled-components
+        import styled from 'styled-components';
+        const MyDiv = styled.div`
+            background-color: red;
+            color: white;
+        `;
+        <MyDiv>Hello</MyDiv>
+        
+        ```
+        
+4. **Refactor a component to use `React.memo` to improve performance.**
+    - Example:
+        
+        ```jsx
+        const MyComponent = React.memo(function MyComponent({ value }) {
+            return <div>{value}</div>;
+        });
+        
+        ```
+        
+
+### React Bug Fixing Questions
+
+1. **Fix a bug where a React component does not update when state changes.**
+    - Ensure the state is being updated correctly and that the component is re-rendering.
+    - Example:
+        
+        ```jsx
+        const [count, setCount] = useState(0);
+        const increment = () => setCount(count + 1);
+        
+        ```
+        
+2. **Resolve an issue where a React form loses focus after each keystroke.**
+    - Ensure that controlled components are managed correctly, and the key prop is not causing re-renders.
+    - Example:
+        
+        ```jsx
+        <input value={value} onChange={e => setValue(e.target.value)} />
+        
+        ```
+        
+3. **Fix an issue where a React component is not rendering.**
+    - Check if the component is correctly imported, used, and there are no errors in the JSX.
+    - Example:
+        
+        ```jsx
+        import MyComponent from './MyComponent';
+        <MyComponent />
+        
+        ```
+        
+4. **Resolve an issue where a React component re-renders unnecessarily.**
+    - Use `React.memo`, `useMemo`, or `useCallback` to prevent unnecessary re-renders.
+    - Example:
+        
+        ```jsx
+        const MemoizedComponent = React.memo(MyComponent);
+        
+        ```
+        
+5. **Fix a bug where a React component throws an error due to invalid prop types.**
+    - Ensure the props passed to the component match the expected types.
+    - Example:
+        
+        ```jsx
+        MyComponent.propTypes = {
+            value: PropTypes.string.isRequired
+        };
+        
+        ```
+        
+
+---
+
+This comprehensive set of answers covers essential topics for .NET and React full stack developers with 2 to 2.5 years of experience, focusing on coding, refactoring, and bug fixing. Each answer is aimed at helping you understand the concepts and how to apply them in real-world scenarios. If you need more details or specific code examples, feel free to ask!
