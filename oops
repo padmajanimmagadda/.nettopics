@@ -1,0 +1,95 @@
+Here are 20 frequently asked interview questions on Object-Oriented Programming (OOP) concepts along with their answers:
+
+### 1. **What is Object-Oriented Programming (OOP)?**
+
+- **Answer:** OOP is a programming paradigm based on the concept of "objects," which are instances of classes. It allows developers to create objects that represent real-world entities and provides principles like encapsulation, inheritance, polymorphism, and abstraction to manage and manipulate these objects.
+
+### 2. **What is a class in OOP?**
+
+- **Answer:** A class is a blueprint for creating objects. It defines the attributes (data members) and methods (functions) that the objects created from the class will have.
+
+### 3. **What is an object in OOP?**
+
+- **Answer:** An object is an instance of a class. It represents a real-world entity and has state (attributes) and behavior (methods) as defined by its class.
+
+### 4. **What is encapsulation?**
+
+- **Answer:** Encapsulation is the concept of wrapping data (attributes) and methods (functions) together into a single unit or class. It restricts direct access to some of the object's components, usually achieved using access modifiers like `private`, `protected`, and `public`.
+
+### 5. **What is inheritance?**
+
+- **Answer:** Inheritance is a mechanism in OOP where a new class (subclass or child class) is derived from an existing class (superclass or parent class). The subclass inherits the attributes and methods of the superclass, allowing for code reuse and the creation of hierarchical relationships.
+
+### 6. **What is polymorphism?**
+
+- **Answer:** Polymorphism is the ability of a function, method, or object to take on many forms. In OOP, it allows objects of different classes to be treated as objects of a common superclass. There are two types of polymorphism: compile-time (method overloading) and runtime (method overriding).
+
+### 7. **What is abstraction?**
+
+- **Answer:** Abstraction is the process of hiding the implementation details and showing only the essential features of an object. It helps in reducing complexity and increasing efficiency by focusing on what an object does rather than how it does it.
+
+### 8. **What are access modifiers?**
+
+- **Answer:** Access modifiers are keywords used to define the visibility and accessibility of classes, methods, and attributes. Common access modifiers include:
+    - `private`: Accessible only within the same class.
+    - `protected`: Accessible within the same class and by subclasses.
+    - `public`: Accessible from any other class.
+    - `default` (no modifier in some languages like Java): Accessible within the same package.
+
+### 9. **What is method overloading?**
+
+- **Answer:** Method overloading is a compile-time polymorphism feature where multiple methods in the same class have the same name but different parameters (number, type, or order). The correct method is chosen based on the method signature at compile time.
+
+### 10. **What is method overriding?**
+
+- **Answer:** Method overriding is a runtime polymorphism feature where a subclass provides a specific implementation for a method already defined in its superclass. The overridden method in the subclass has the same name, return type, and parameters as the method in the superclass.
+
+### 11. **What is the difference between a constructor and a method?**
+
+- **Answer:** A constructor is a special type of method that is automatically invoked when an object is created. It has the same name as the class and is used to initialize the object's attributes. A method, on the other hand, is a regular function defined within a class that performs actions or operations on the object's data.
+
+### 12. **What is the difference between an abstract class and an interface?**
+
+- **Answer:**
+    - **Abstract Class**: A class that cannot be instantiated and may contain abstract methods (without implementation) and concrete methods (with implementation). It is used to provide a base for subclasses.
+    - **Interface**: A contract that defines a set of methods that implementing classes must provide. Interfaces only contain method declarations (no implementation) and are used to achieve complete abstraction and multiple inheritance.
+
+### 13. **What is a destructor?**
+
+- **Answer:** A destructor is a special method in OOP that is called when an object is destroyed. It is used to clean up resources such as closing files, releasing memory, etc. In languages like C++, destructors have the same name as the class prefixed with a tilde (~).
+
+### 14. **What is the difference between composition and inheritance?**
+
+- **Answer:**
+    - **Inheritance**: Represents an "is-a" relationship where a child class inherits properties and behavior from a parent class.
+    - **Composition**: Represents a "has-a" relationship where an object is composed of other objects (e.g., a Car object composed of Engine, Wheels, etc.).
+
+### 15. **What is the significance of the `this` keyword?**
+
+- **Answer:** The `this` keyword refers to the current instance of the class in which it is used. It is commonly used to differentiate between class attributes and parameters with the same name or to call other constructors within the same class.
+
+### 16. **What is a static method or attribute?**
+
+- **Answer:** A static method or attribute belongs to the class itself rather than any particular instance of the class. Static methods can be called without creating an instance of the class, and static attributes are shared among all instances of the class.
+
+### 17. **What is an interface in OOP?**
+
+- **Answer:** An interface is a reference type in OOP that defines a set of abstract methods that a class must implement. It allows different classes to be treated as the same type through the methods they expose.
+
+### 18. **What is the difference between shallow copy and deep copy?**
+
+- **Answer:**
+    - **Shallow Copy**: Creates a new object, but does not create copies of the objects that the original object references. It copies the references to the same memory locations.
+    - **Deep Copy**: Creates a new object and also recursively copies all objects referenced by the original object, resulting in a fully independent copy.
+
+### 19. **What is the diamond problem in OOP?**
+
+- **Answer:** The diamond problem occurs in multiple inheritance scenarios when two parent classes inherit from the same grandparent class, and a child class inherits from both parent classes. This can cause ambiguity about which version of the grandparent's method the child class should inherit. Some languages like C++ provide virtual inheritance to resolve this, while others like Java and C# avoid the problem by not supporting multiple inheritance of classes.
+
+### 20. **What is the difference between an abstract method and a concrete method?**
+
+- **Answer:**
+    - **Abstract Method**: A method that is declared without an implementation and must be implemented by subclasses.
+    - **Concrete Method**: A method that has an implementation. Subclasses can either use it directly or override it if necessary.
+
+These questions cover fundamental OOP concepts and are commonly asked in technical interviews. Understanding these concepts is crucial for writing clean, efficient, and maintainable object-oriented code.
