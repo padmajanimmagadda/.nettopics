@@ -1,0 +1,291 @@
+Here are some commonly asked .NET Core interview questions for a 2-year experienced full-stack developer, along with answers:
+
+### 1. **What is .NET Core? How is it different from .NET Framework?**
+
+**Answer:**
+
+- **.NET Core** is a cross-platform, open-source framework used for developing applications that run on Windows, macOS, and Linux. It is designed to be modular and lightweight, making it ideal for microservices and cloud-based applications.
+- **Differences**:
+    - **Cross-Platform**: .NET Core is cross-platform, while .NET Framework is limited to Windows.
+    - **Open Source**: .NET Core is open-source; .NET Framework is not.
+    - **Modular Architecture**: .NET Core uses NuGet packages, allowing developers to include only the libraries needed.
+
+### 2. **What are the benefits of using .NET Core?**
+
+**Answer:**
+
+- **Cross-Platform Support**: Applications can run on Windows, Linux, and macOS.
+- **Performance**: .NET Core offers high performance, particularly for server-side applications.
+- **Microservices Architecture**: Ideal for building scalable microservices.
+- **Modular**: Allows developers to include only the packages they need, reducing application size.
+- **Unified Development**: With .NET Core, you can develop web, mobile, desktop, cloud, and IoT applications.
+
+### 3. **What is Dependency Injection in .NET Core? How is it implemented?**
+
+**Answer:**
+
+- **Dependency Injection (DI)** is a design pattern used to achieve Inversion of Control (IoC) between classes and their dependencies. It allows for loose coupling between components.
+- **Implementation in .NET Core**:
+    - Configure services in the `Startup.cs` file using `ConfigureServices` method.
+    - Use the built-in IoC container to inject dependencies via constructors or properties.
+    
+    Example:
+    
+    ```csharp
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddTransient<IMyService, MyService>();
+    }
+    
+    ```
+    
+
+### 4. **What are Middleware components in .NET Core?**
+
+**Answer:**
+
+- **Middleware** are software components that are assembled into an application pipeline to handle requests and responses.
+- They are executed in sequence. Each middleware component can either pass the request to the next component or terminate the request pipeline.
+- Middleware is added to the `Startup.Configure` method.
+    
+    Example:
+    
+    ```csharp
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
+    }
+    
+    ```
+    
+
+### 5. **What is the significance of `Startup.cs` in a .NET Core application?**
+
+**Answer:**
+
+- The `Startup.cs` file is essential in configuring the request pipeline and services for the application.
+- It contains two methods:
+    - `ConfigureServices`: Registers services with the DI container.
+    - `Configure`: Defines the middleware pipeline that handles requests.
+
+### 6. **What are the different ways to configure services in .NET Core?**
+
+**Answer:**
+
+- Services can be registered in the `ConfigureServices` method of `Startup.cs`.
+- There are three lifetimes:
+    - **Transient**: Created each time they are requested.
+    - **Scoped**: Created once per request.
+    - **Singleton**: Created once and shared throughout the application's lifetime.
+
+### 7. **What is Entity Framework Core (EF Core)?**
+
+**Answer:**
+
+- **EF Core** is an Object-Relational Mapper (ORM) for .NET Core. It allows developers to work with a database using .NET objects, eliminating the need for most of the data-access code that developers usually need to write.
+- It supports LINQ queries, change tracking, updates, and schema migrations.
+
+### 8. **How do you implement authentication and authorization in .NET Core?**
+
+**Answer:**
+
+- **Authentication** is the process of verifying who a user is.
+- **Authorization** is the process of determining whether a user has permission to access a resource.
+- **Implementation**:
+    - Use `Identity` or third-party libraries like `JWT` for authentication.
+    - Add `Authorize` attribute to controllers or actions for authorization.
+    
+    Example:
+    
+    ```csharp
+    [Authorize(Roles = "Admin")]
+    public IActionResult AdminDashboard()
+    {
+        return View();
+    }
+    
+    ```
+    
+
+### 9. **How do you handle configuration in .NET Core?**
+
+**Answer:**
+
+- Configuration in .NET Core is typically handled via `appsettings.json`, environment variables, or the `IConfiguration` interface.
+- Use the `Configuration` property in `Startup.cs` to access configuration values.
+    
+    Example:
+    
+    ```json
+    {
+      "ConnectionStrings": {
+        "DefaultConnection": "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;"
+      }
+    }
+    
+    ```
+    
+    Accessing it:
+    
+    ```csharp
+    var connectionString = Configuration.GetConnectionString("DefaultConnection");
+    
+    ```
+    
+
+### 10. **What is Kestrel in .NET Core?**
+
+**Answer:**
+
+- **Kestrel** is a cross-platform web server included and enabled by default in .NET Core applications. It is known for being lightweight and fast.
+- It can be used as an edge server or behind another server like IIS, Nginx, or Apache.
+
+These questions and answers should provide a strong foundation for preparing for .NET Core interviews. Would you like more questions on specific topics or more advanced topics?
+
+Here's a comprehensive list of 50 frequently asked .NET Core interview questions, along with concise answers. This should help you prepare thoroughly for an interview as a 2-year experienced full-stack developer:
+
+### General .NET Core Questions
+
+1. **What is .NET Core?**
+    - **Answer:** A cross-platform, open-source framework for building modern applications that run on Windows, macOS, and Linux.
+2. **What are the main features of .NET Core?**
+    - **Answer:** Cross-platform support, modularity, high performance, cloud-based application support, and microservices architecture.
+3. **How is .NET Core different from .NET Framework?**
+    - **Answer:** .NET Core is cross-platform and open-source, while .NET Framework is Windows-only and closed-source.
+4. **What is the role of the `Startup.cs` file?**
+    - **Answer:** It configures services and the request pipeline for the application.
+5. **What are the different types of applications you can build with .NET Core?**
+    - **Answer:** Web applications, microservices, console applications, APIs, desktop applications (with .NET 5+), and cloud-based applications.
+
+### Dependency Injection and Middleware
+
+1. **What is Dependency Injection (DI) in .NET Core?**
+    - **Answer:** A design pattern that allows for the injection of dependencies into classes rather than creating them within the classes themselves.
+2. **How do you register a service with a specific lifetime in .NET Core?**
+    - **Answer:** Using `services.AddTransient<>`, `services.AddScoped<>`, or `services.AddSingleton<>` in the `ConfigureServices` method.
+3. **What is Middleware in .NET Core?**
+    - **Answer:** Middleware are components in the application pipeline that handle requests and responses.
+4. **How do you add custom middleware in .NET Core?**
+    - **Answer:** By creating a class with a `Invoke` or `InvokeAsync` method and using `app.UseMiddleware<YourMiddlewareClass>()` in `Startup.Configure`.
+5. **What is the difference between `Use` and `Run` in the middleware pipeline?**
+    - **Answer:** `Use` allows the request to be passed to the next middleware, while `Run` short-circuits the pipeline and does not pass the request further.
+
+### Entity Framework Core (EF Core)
+
+1. **What is Entity Framework Core?**
+    - **Answer:** An ORM for .NET Core that enables developers to work with databases using .NET objects.
+2. **What are the main differences between EF Core and EF6?**
+    - **Answer:** EF Core is cross-platform, lightweight, and has a modular architecture, while EF6 is Windows-only and heavier.
+3. **How do you perform a migration in EF Core?**
+    - **Answer:** Using commands like `Add-Migration`, `Update-Database`, and `Remove-Migration` in the Package Manager Console or CLI.
+4. **What is a DbContext in EF Core?**
+    - **Answer:** A class that acts as a bridge between your domain classes and the database.It is responsible for managing the database connection, executing queries, tracking changes to entities, and coordinating updates to the database.
+    
+    [in detail](https://www.notion.so/in-detail-3609546b217b41d0853321f6fff4fcd4?pvs=21)
+    
+5. **How do you configure a connection string in EF Core?**
+    - **Answer:** By overriding the `OnConfiguring` method in `DbContext` or by using `IConfiguration` to retrieve it from `appsettings.json`.
+
+### [ASP.NET](http://asp.net/) Core MVC and API
+
+1. **What is [ASP.NET](http://asp.net/) Core MVC?**
+    - **Answer:** A framework for building web applications using the Model-View-Controller pattern.
+    - 
+    
+    ASP.NET Core MVC is a web application framework that follows the Model-View-Controller (MVC) architectural pattern. It is part of the ASP.NET Core framework, which is designed to build modern, scalable, and high-performance web applications.
+    
+    ### Key Concepts:
+    
+    1. **Model**:
+        - Represents the application's data and business logic. Models are responsible for retrieving, storing, and manipulating data, often interacting with a database.
+    2. **View**:
+        - Defines the UI (User Interface) that the user interacts with. Views are responsible for displaying data from the model to the user in a web browser. They are usually written using Razor syntax, which combines HTML with C#.
+    3. **Controller**:
+        - Handles user input and interactions. Controllers receive input from the user through HTTP requests, process it (often by interacting with the model), and then return a response, typically by rendering a view.
+2. **How do you create a Web API in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** By creating a controller that inherits from `ControllerBase` and decorating it with `[ApiController]`.
+3. **What is routing in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** The process of mapping incoming HTTP requests to corresponding action methods in controllers.Each action method corresponds to an endpoint in the application.
+4. **What are the different types of routing in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** Convention-based routing and attribute-based routing.
+5. **What is the `[FromBody]` attribute used for in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** To bind data from the request body to a parameter in an action method.
+
+### Security
+
+1. **How do you implement authentication in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** Using Identity, JWT (JSON Web Tokens), or third-party authentication providers like OAuth.
+2. **What is [ASP.NET](http://asp.net/) Core Identity?**
+    - **Answer:** A membership system that adds login functionality to your application, including user management and authentication.
+3. **How do you secure a Web API in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** By using JWT tokens for authentication and applying authorization policies.
+4. **What is CORS, and how do you enable it in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** CORS (Cross-Origin Resource Sharing) allows you to control how resources on your server are accessed by other domains. It can be enabled using `services.AddCors()` and `app.UseCors()`.
+5. **How do you implement role-based authorization in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** By using the `[Authorize(Roles = "RoleName")]` attribute on controllers or actions.
+
+### Performance and Optimization
+
+1. **What are some ways to improve the performance of a .NET Core application?**
+    - **Answer:** Caching, asynchronous programming, minimizing database calls, optimizing queries, and using a CDN for static files.
+2. **How do you use caching in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** By using in-memory caching, distributed caching, or response caching.
+3. **What is response compression, and how do you enable it in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** Response compression reduces the size of the response sent to the client. It can be enabled using `app.UseResponseCompression()`.
+4. **What are Health Checks in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** A feature that allows you to monitor the health of your application by exposing an endpoint that returns the application's status.
+5. **How do you use asynchronous programming in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** By using `async` and `await` keywords in controller actions and services.
+
+### Configuration and Hosting
+
+1. **How do you manage configuration in .NET Core?**
+    - **Answer:** By using `appsettings.json`, environment variables, or Azure Key Vault.
+2. **How do you set up environment-specific configuration in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** By using `appsettings.{EnvironmentName}.json` files or environment variables.
+3. **What is Kestrel in .NET Core?**
+    - **Answer:** Kestrel is a cross-platform web server included and enabled by default in [ASP.NET](http://asp.net/) Core applications.
+4. **What are the different ways to host an [ASP.NET](http://asp.net/) Core application?**
+    - **Answer:** Self-hosting using Kestrel, hosting on IIS, or hosting on cloud platforms like Azure.
+5. **How do you deploy a .NET Core application to Azure?**
+    - **Answer:** Using Visual Studio publish, Azure DevOps, or the Azure CLI.
+
+### Advanced Topics
+
+1. **What is gRPC, and how do you implement it in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** gRPC is a high-performance, open-source RPC framework. You implement it by creating .proto files and using the `Grpc.AspNetCore` package.
+2. **What is a Background Service in .NET Core?**
+    - **Answer:** A service that runs in the background and performs tasks without user interaction. It can be implemented using `IHostedService`.
+3. **What is SignalR in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** A library for adding real-time web functionality to your applications, enabling server-side code to push content to connected clients.
+4. **What is Docker, and how do you containerize a .NET Core application?**
+    - **Answer:** Docker is a platform for developing, shipping, and running applications in containers. You can containerize a .NET Core application by adding a Dockerfile and using Docker CLI commands.
+5. **How do you handle logging in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** Using the built-in logging framework, which supports various log providers like Console, Debug, and third-party providers like Serilog and NLog.
+
+### Testing
+
+1. **How do you write unit tests for a .NET Core application?**
+    - **Answer:** Using a testing framework like xUnit or NUnit and mocking dependencies using a library like Moq.
+2. **What is integration testing in [ASP.NET](http://asp.net/) Core?**
+    - **Answer:** Testing the interaction between components, such as between the database and API, using the `TestServer` class.
+3. **How do you implement test-driven development (TDD) in .NET Core?**
+    - **Answer:** By writing unit tests before writing the actual code, ensuring that the codebase is well-tested and robust.
+4. **How do you mock dependencies in unit tests?**
+    - **Answer:** By using mocking frameworks like Moq to simulate the behavior of complex objects.
+5. **What is the purpose of the `InMemoryDatabase` provider in EF Core?**
+    - **Answer:** To enable testing of your data access code without involving an actual database.
+
+### Miscellaneous
+
+1. **What is the purpose of the `IActionResult` interface?**
+    - **Answer:** It defines a contract for the result of an action method, enabling different types of responses (e.g., `Ok`, `NotFound`, `BadRequest`).
+2. **What is Razor Pages, and how does it differ from MVC?**
+    - **Answer:** Razor Pages is a simpler, page-based framework in [ASP.NET](http://asp.net/) Core.
+    designed for building simple, data-driven web applications with a focus on ease of development. It uses a single file model where the UI (Razor markup) and the page logic (C# code) are contained within the same `.cshtml` file, which makes it more straightforward and intuitive for building web pages.
