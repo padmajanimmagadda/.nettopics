@@ -1,0 +1,199 @@
+### 22. Write an SQL query to determine the nth (say n=5) highest GPA from a table.
+
+```sql
+SELECT * FROM Student ORDER BY GPA DESC LIMIT 1 OFFSET 4;
+
+--limit tells how many rows should be retrived
+--offset is how many should be skipped
+```
+
+### 23. Write an SQL query to determine the nth highest GPA without using LIMIT keyword.
+
+```sql
+SELECT * FROM Student s1
+WHERE n-1 = (
+    SELECT COUNT(DISTINCT (s2.GPA))
+    FROM Student s2
+    WHERE s2.GPA >= s1.GPA
+);
+```
+
+**block scope** refers to the scope of variables declared within a block, which is defined by curly braces `{}`. Variables declared with `let` and `const` are block-scoped, meaning they are only accessible within the block in which they are defined.
+
+Sure, here are the 30 commonly asked JavaScript interview questions along with their answers, tailored for candidates with 2-3 years of experience:
+
+1. **What are the different data types present in JavaScript?**
+    - **Answer:** JavaScript has six primitive data types: `undefined`, `null`, `boolean`, `number`, `string`, and `symbol`. Additionally, it has one non-primitive type: `object`.
+- `undefined` is automatically assigned by JavaScript when a variable is declared but not initialized.
+- `null` is explicitly assigned by the programmer to indicate that a variable has no value.
+1. **Explain the concept of closures in JavaScript.**
+    
+    A closure in JavaScript is a feature where an inner function has access to its outer enclosing function’s variables and the variables in the global scope. This happens even after the outer function has finished executing.
+    
+    Here’s a breakdown of what closures can access:
+    
+    1. **Variables in its own scope**
+    2. **Variables in the outer function's scope**
+    3. **Variables in the global scope**
+    
+    Closures are created every time a function is created. Here’s a simple example to illustrate closures:
+    
+    ```jsx
+    function outerFunction(outerVariable) {
+        return function innerFunction(innerVariable) {
+            console.log('Outer Variable: ' + outerVariable);
+            console.log('Inner Variable: ' + innerVariable);
+        }
+    }
+    
+    const newFunction = outerFunction('outside');
+    newFunction('inside');
+    
+    ```
+    
+    In this example:
+    
+    - `outerFunction` is called with the argument `'outside'`, which assigns `'outside'` to `outerVariable`.
+    - `outerFunction` returns `innerFunction`, which is then assigned to `newFunction`.
+    - When `newFunction` is called with the argument `'inside'`, it logs both the `outerVariable` and `innerVariable`.
+    
+    Output:
+    
+    ```
+    Outer Variable: outside
+    Inner Variable: inside
+    
+    ```
+    
+    This demonstrates that `innerFunction` maintains access to `outerVariable` even after `outerFunction` has completed execution, which is the essence of closures in JavaScript.
+    
+    [in detail](https://www.notion.so/in-detail-56a17a784e6e4823a38de99a36619cb3?pvs=21)
+    
+2. **What is the difference between `==` and `===`?**
+    - **Answer:** `==` is the equality operator that performs type coercion, meaning it converts the operands to the same type before comparing. `===` is the strict equality operator that checks for equality without type conversion.
+3. **What are JavaScript promises? How do you use them?**
+    - **Answer:** A promise is an object representing the eventual completion or failure of an asynchronous operation. Promises have three states: `pending`, `fulfilled`, and `rejected`. They are used with `.then()`, `.catch()`, and `.finally()` methods.
+    
+    [In detail](https://www.notion.so/In-detail-19e1bf7513fc46f18769935441fa8074?pvs=21)
+    
+4. **What is the event loop in JavaScript? How does it work?**
+    - **Answer:** The event loop  enables non-blocking I/O operations despite JavaScript being single-threaded. It is responsible for handling asynchronous operations, ensuring that functions are executed in the correct order without blocking the main thread.It continuously checks the call stack and the call-back queue, executing queued tasks when the call stack is empty, thus allowing non-blocking operations.
+    
+    [in detail](https://www.notion.so/in-detail-f0488dcd16c348aca76d46c8377e12dd?pvs=21)
+    
+5. **Explain the concept of `this` keyword in JavaScript.**
+    - **Answer:** The `this` keyword refers to the context in which a function is executed. Its value depends on how the function is called: in a method, it refers to the object the method belongs to; in a regular function, it refers to the global object or `undefined` in strict mode.
+6. **What are arrow functions, and how do they differ from regular functions?**
+    - **Answer:** Arrow functions are a shorthand for writing functions. They do not have their own `this` context; instead, they inherit `this` from the enclosing lexical context. They also do not have `arguments` object or `prototype`.
+7. **What is the difference between `let`, `const`, and `var`?**
+    - **Answer:** `var` is function-scoped and can be redeclared. `let` and `const` are block-scoped; `let` can be reassigned, while `const` cannot be reassigned after its initial declaration.
+8. **What are JavaScript modules, and how do you use them?**
+    - **Answer:** JavaScript modules allow you to split your code into separate files, each exporting variables or functions that can be imported into other files. They are used with `import` and `export` statements.
+9. **What is hoisting in JavaScript?**
+    - **Answer:** Hoisting is JavaScript's default behavior of moving declarations (but not initializations) to the top of their containing scope during the compilation phase.
+10. **Explain the concept of prototypal inheritance.**
+    - **Answer:** Prototypal inheritance is a feature in JavaScript where objects can inherit properties and methods from other objects. This is done through the prototype chain, where an object's prototype is another object.
+11. **What is the difference between `null` and `undefined`?**
+    - **Answer:** `null` is an assignment value that represents no value. `undefined` indicates that a variable has been declared but not assigned a value.
+12. **How does asynchronous programming work in JavaScript?**
+    - **Answer:** Asynchronous programming allows operations to be performed without blocking the main thread. It is achieved through callbacks, promises, and async/await, enabling tasks to run in the background and providing results when ready.
+13. **What is the purpose of the `async` and `await` keywords?**
+    - **Answer:** `async` is used to declare an asynchronous function, which returns a promise. `await` pauses the execution of the async function, waiting for the promise to resolve or reject before continuing.
+14. **What are higher-order functions in JavaScript?**
+    - **Answer:** Higher-order functions are functions that can take other functions as arguments or return functions as their result. Examples include `map`, `filter`, and `reduce`.
+15. **Explain the concept of callbacks.**
+    - **Answer:** A callback is a function passed as an argument to another function, which is then invoked inside the outer function to complete some kind of routine or action.
+16. **What is the difference between `call`, `apply`, and `bind`?**
+    - **Answer:** `call` and `apply` are used to invoke functions with a specific `this` context. `call` accepts arguments individually, while `apply` accepts them as an array. `bind` returns a new function with a specific `this` context and arguments.
+17. **What is a promise chain?**
+    - **Answer:** A promise chain is a series of promise handlers (`then`, `catch`, `finally`) that are executed sequentially. Each handler returns a new promise, allowing for a sequence of asynchronous operations.
+18. **What is the use of the `fetch` API?**
+    - **Answer:** The `fetch` API is used to make network requests to retrieve resources. It returns a promise that resolves to the Response object representing the response to the request.
+19. **What is the difference between synchronous and asynchronous code?**
+    - **Answer:** Synchronous code is executed line-by-line, blocking subsequent operations until the current one completes. Asynchronous code allows operations to run in the background, enabling non-blocking execution.
+20. **How do you handle errors in JavaScript?**
+    - **Answer:** Errors in JavaScript can be handled using `try...catch` blocks, `throw` statements to create custom errors, and `.catch` method for promises.
+21. **What is the purpose of `Array.prototype.map`?**
+    - **Answer:** `Array.prototype.map` creates a new array populated with the results of calling a provided function on every element in the original array.
+22. **How does `Array.prototype.filter` work?**
+    - **Answer:** `Array.prototype.filter` creates a new array with all elements that pass the test implemented by the provided function.
+23. **What is the use of `Array.prototype.reduce`?**
+    - **Answer:** `Array.prototype.reduce` executes a reducer function on each element of the array, resulting in a single output value.
+24. **What is a JavaScript object, and how do you create one?**
+    - **Answer:** A JavaScript object is a collection of key-value pairs. Objects can be created using object literals `{}`, the `new Object()` syntax, or `Object.create()`.
+25. **How do you create and use a JavaScript class?**
+    - **Answer:** Classes in JavaScript are created using the `class` keyword, followed by a constructor and methods. They can be instantiated using the `new` keyword.
+26. **What are template literals?**
+    - **Answer:** Template literals are string literals allowing embedded expressions, denoted by backticks (```). They support multi-line strings and string interpolation using `${expression}`.
+27. **How do you manipulate the DOM using JavaScript?**
+    - **Answer:** The DOM can be manipulated using methods like `getElementById`, `querySelector`, `appendChild`, `removeChild`, `createElement`, and properties like `innerHTML` and `style`.
+28. **What is the difference between `event.preventDefault()` and `event.stopPropagation()`?**
+    - **Answer:** `event.preventDefault()` prevents the default action of an event (e.g., following a link). `event.stopPropagation()` stops the event from bubbling up to parent elements.
+29. **What is debouncing and throttling in JavaScript?**
+    - **Answer:** Debouncing ensures a function is only executed once after a specified period of inactivity. Throttling limits the execution of a function to at most once every specified interval.
+
+Feel free to ask if you need more details or examples for any of these answers!
+
+1. **What is a REST API?**
+    - **Answer:** A REST API (Representational State Transfer API) is a set of rules that allows for interaction with web services. It uses standard HTTP methods (GET, POST, PUT, DELETE) for CRUD (Create, Read, Update, Delete) operations.
+2. **What are the main principles of REST?**
+    - **Answer:** REST principles include statelessness, client-server architecture, cacheability, uniform interface, and layered system architecture.
+3. **What is the difference between PUT and POST?**
+    - **Answer:** PUT is idempotent and used to update a resource or create it if it does not exist. POST is not idempotent and is typically used to create a new resource.
+4. **Explain the term 'stateless' in REST.**
+    - **Answer:** Stateless means each request from a client to the server must contain all the information needed to understand and process the request, without relying on any stored context on the server.
+5. **What are HTTP status codes and name a few commonly used ones?**
+    - **Answer:** HTTP status codes indicate the result of the HTTP request. Common ones include 200 (OK), 201 (Created), 400 (Bad Request), 401 (Unauthorized), 404 (Not Found), and 500 (Internal Server Error).
+6. **What is JSON and why is it commonly used in REST APIs?**
+    - **Answer:** JSON (JavaScript Object Notation) is a lightweight data interchange format that is easy for humans to read and write and easy for machines to parse and generate. It's commonly used in REST APIs because of its simplicity and compatibility with web technologies.
+7. **How do you handle versioning in REST APIs?**
+    - **Answer:** Versioning can be handled using URI versioning (e.g., /api/v1/resource), query parameters (e.g., /resource?version=1), or HTTP headers.
+8. **What are some common authentication methods used in REST APIs?**
+    - **Answer:** Common authentication methods include Basic Auth, Token-based Auth (e.g., JWT), OAuth, and API keys.
+9. **What is CORS and why is it important?**
+    - **Answer:** CORS (Cross-Origin Resource Sharing) is a mechanism that allows restricted resources on a web page to be requested from another domain. It's important for security and to control which domains can access your resources.
+10. **Explain the concept of idempotency in REST APIs.**
+    - **Answer:** Idempotency means that multiple identical requests should have the same effect as a single request. PUT and DELETE methods are idempotent, while POST is not.
+11. **What is HATEOAS and why is it important?**
+    - **Answer:** HATEOAS (Hypermedia as the Engine of Application State) is a constraint of REST where responses include links to related resources, allowing clients to navigate the API dynamically. It enhances discoverability and decouples client-server interaction.
+12. **How can you secure a REST API?**
+    - **Answer:** Securing a REST API can involve using HTTPS, validating input, implementing proper authentication and authorization, rate limiting, and protecting against common vulnerabilities like SQL injection and XSS.
+13. **What are the differences between synchronous and asynchronous API calls?**
+    - **Answer:** Synchronous API calls wait for the server to process and return a response before continuing. Asynchronous API calls allow the client to continue processing other tasks while waiting for the server response.
+14. **How do you handle pagination in REST APIs?**
+    - **Answer:** Pagination can be handled using query parameters (e.g., page, limit) to control the number of records returned and navigate through pages of data.
+15. **What is the purpose of HTTP methods in REST APIs and name a few?**
+    - **Answer:** HTTP methods define the action to be performed on a resource. Common methods include GET (retrieve data), POST (create data), PUT (update data), DELETE (remove data), and PATCH (partial update of data).
+
+16.What is an endpoint in REST API?
+An endpoint is a URL pattern used to access a resource in a RESTful service. It represents the location where the API can access the resources and perform the operations.
+
+17.What are the best practices for designing RESTful APIs?
+Some best practices include using meaningful resource names, implementing proper HTTP methods, using plural nouns for collections, versioning APIs, ensuring statelessness, and providing clear and consistent error messages.
+
+18.How do you handle authentication and authorization in REST APIs?
+Common methods include using OAuth 2.0 for token-based authentication, API keys for simple authentication, and implementing JWT (JSON Web Tokens) for securing API endpoints. Properly configuring CORS (Cross-Origin Resource Sharing) is also essential for security.
+
+19.How do you handle errors in rest apis
+
+Buy using appropriate http status codes (explain all http status code) and detailed error messages and logging error messages.
+
+20.What is the difference b/w rest and soap
+
+**REST (Representational State Transfer)** and **SOAP (Simple Object Access Protocol)** are two different web service protocols:
+
+- **REST:**
+    - **Architecture Style:** Uses a stateless, client-server architecture.
+    - **Data Format:** Typically uses JSON or XML.
+    - **Transport Protocol:** Primarily relies on HTTP.
+    - **Flexibility:** More flexible and scalable, designed for web applications.
+    - **Performance:** Generally faster due to lightweight messages.
+- **SOAP:**
+    - **Protocol:** A protocol with strict standards.
+    - **Data Format:** Uses XML exclusively.
+    - **Transport Protocol:** Can use HTTP, SMTP, TCP, etc.
+    - **Standards:** Enforces WS-* standards (e.g., security, transactions).
+    - **Complexity:** More rigid and complex, suitable for enterprise-level services requiring high security and transactions.
+
+In summary, REST is simpler and more flexible, commonly used for web services, while SOAP is more robust and standards-based, suitable for enterprise services with high security needs.
+
