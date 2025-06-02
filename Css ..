@@ -1,0 +1,175 @@
+Got it! Here's how you can build the same layout **using plain CSS** (no Tailwind). I'll provide:
+
+1. ✅ HTML structure in JSX (`SupportPage.jsx`)
+2. 🎨 CSS styles (`SupportPage.css`)
+
+---
+
+### ✅ 1. `SupportPage.jsx`
+
+```jsx
+import React from 'react';
+import './SupportPage.css';
+
+const SupportPage = () => {
+  return (
+    <div className="support-container">
+      <h1 className="heading">Support Dashboard</h1>
+
+      <div className="support-grid">
+        {/* ITPA Forms */}
+        <div className="card">
+          <h2>ITPA Forms</h2>
+          <p>
+            You can check our automated forms or open an incident or a generic
+            request, pasting our team on Assignment group field.
+          </p>
+          <a href="#" className="link">ITPA Forms Link</a>
+          <div className="button-group">
+            <button className="btn blue">Open an incident</button>
+            <button className="btn light-blue">Open a generic request</button>
+          </div>
+          <p className="note">
+            Assignment group: <strong>IAM ITPA - Support</strong>
+          </p>
+        </div>
+
+        {/* PAM Support */}
+        <div className="card">
+          <h2>PAM Support</h2>
+          <p>Support by e-mail!<br />You will be reached as soon as possible.</p>
+          <div className="email-block">
+            <p><strong>PAA</strong><br />GSC-EMIT-IAM-PRIVILEGEADMIN<br /><span>@exxonmobil.com</span></p>
+            <p><strong>ITPA L2</strong><br />GSC-EMIT-ITPA-SUPPORT<br /><span>@exxonmobil.com</span></p>
+            <p><strong>ITPA L3</strong><br />GSC-EMIT-IAM-DELIVERY-ITPA<br /><span>@exxonmobil.com</span></p>
+          </div>
+        </div>
+
+        {/* Oncall Support */}
+        <div className="card red-card">
+          <h2 className="red-heading">Oncall Support - Non-business hours</h2>
+          <p>Call our oncall number for support outside of business hours.</p>
+          <p className="phone-number">+1 346-502-0333</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SupportPage;
+```
+
+---
+
+### 🎨 2. `SupportPage.css`
+
+```css
+.support-container {
+  font-family: Arial, sans-serif;
+  padding: 30px;
+  background: #fff;
+  min-height: 100vh;
+}
+
+.heading {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.support-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .support-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 20px;
+  background: #fefefe;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+}
+
+.red-card {
+  border-color: #f44336;
+  background-color: #ffe6e6;
+}
+
+h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.link {
+  color: #007bff;
+  text-decoration: underline;
+  display: block;
+  margin: 10px 0;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn.blue {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.btn.light-blue {
+  background-color: #e0f0ff;
+  color: #007bff;
+}
+
+.note {
+  font-size: 14px;
+  color: #555;
+}
+
+.email-block p {
+  margin: 12px 0;
+}
+
+.email-block span {
+  font-size: 13px;
+  color: gray;
+}
+
+.red-heading {
+  color: #c62828;
+}
+
+.phone-number {
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 20px;
+}
+```
+
+---
+
+### 🧪 How to Use
+
+1. Place both files inside your React app.
+2. Import and render `<SupportPage />` in `App.js`.
+
+---
+
+Would you like me to create a downloadable zip or a GitHub repo with this?
